@@ -5,6 +5,7 @@ import 'package:my_vaccine_app/config/theme/colors_my_vaccine_app.dart';
 import 'package:my_vaccine_app/features/shared/shared.dart';
 import 'package:my_vaccine_app/features/shared/widgets/custom_datepicker_form_field.dart';
 import 'package:my_vaccine_app/features/auth/presentation/providers/registration_form_provider.dart';
+import 'package:my_vaccine_app/features/auth/presentation/providers/auth_provider.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -77,11 +78,21 @@ class _RegisterForm extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final registrationForm = ref.watch(registrationFormProvider);
 
-    // ref.listen(registrationFormProvider, (previous, next) {
-    //   if (next.isFormPosted && !next.isValid) {
-    //     showSnackbar(context, 'Please fill out all fields correctly');
-    //   }
-    // });
+    ref.listen(registrationFormProvider, (previous, next) {
+      if (next.isFormPosted && !next.isValid) {
+        showSnackbar(context, 'Por favor, completa todos los campos correctamente');
+      }
+    });
+
+    ref.listen(authProvider, (previous, next) {
+      if (next?.authStatus == AuthStatus.authenticated) {
+        showSnackbar(context, '¡Cuenta creada exitosamente!');
+        context.pushReplacement('/home');
+      }
+      if (next.errorMessage.isNotEmpty) {
+        showSnackbar(context, next.errorMessage);
+      }
+    });
 
     final textStyles = Theme.of(context).textTheme;
 
